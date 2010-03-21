@@ -21,13 +21,14 @@ location = droid.getLastKnownLocation().result
 longitude = location['longitude']
 latitude = location['latitude']
 
-URL = "USE 'http://www.meusgastos.com.br/odt/meuspostos.precos.coordenadas.xml' as meuspostos.precos.coordenadas; SELECT * FROM meuspostos.precos.coordenadas WHERE lat=%.4f and lon=%.4f" % (latitude,longitude)
+URL = "USE 'http://www.meusgastos.com.br/odt/meuspostos.precos.coordenadas.xml' as meuspostos.precos.coordenadas; SELECT * FROM meuspostos.precos.coordenadas WHERE lat=%.4f and lon=%.4f and sort=1" % (latitude,longitude)
 
 y = yql.Public()
 full_result = y.execute(URL)
 
 for row in full_result['query']['results']['item']:
-    gas_station_name.append(row['nome'])
+    name_and_price = "%s (R$%s)" % (row['nome'],row['gasolina'])
+    gas_station_name.append(name_and_price)
     gas_station_dic[i] = row['nome']
     i += 1
 
