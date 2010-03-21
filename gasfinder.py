@@ -6,15 +6,17 @@ import android
 import time
 
 gas_station_name = []
+gas_station_dic = {}
+i = 0
 droid = android.Android()
 
 droid.startLocating()
-time.sleep(15)
+#time.sleep(15)
 location = droid.readLocation().result
 
 #XXX: must find a way to check if the GPS returned
 #     or not.
-#location = droid.getLastKnownLocation().result
+location = droid.getLastKnownLocation().result
 
 longitude = location['longitude']
 latitude = location['latitude']
@@ -26,6 +28,8 @@ full_result = y.execute(URL)
 
 for row in full_result['query']['results']['item']:
     gas_station_name.append(row['nome'])
+    gas_station_dic[i] = row['nome']
+    i += 1
 
 droid.dialogCreateAlert("Gas Stations near you")
 droid.dialogSetItems(gas_station_name)
@@ -34,7 +38,7 @@ user_choice = droid.dialogGetResponse().result
 
 #XXX: And this is the worst way to find a record. Please fix me
 for row in full_result['query']['results']['item']:
-    if row['nome'] == user_choice:
-        gas_station_coordinate = "%.4f,%.4f" % (row['latitude'],row['longitude'])
+    if row['nome'] == gas_station_dic[user_choice['item']]:
+        gas_station_coordinate = "%s,%s" % (row['latitude'],row['longitude'])
         droid.map(gas_station_coordinate)
 
