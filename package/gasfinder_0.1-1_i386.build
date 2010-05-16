@@ -1,0 +1,123 @@
+ dpkg-buildpackage -rfakeroot -D -us -uc
+dpkg-buildpackage: set CFLAGS to default value: -g -O2
+dpkg-buildpackage: set CPPFLAGS to default value: 
+dpkg-buildpackage: set LDFLAGS to default value: -Wl,-Bsymbolic-functions
+dpkg-buildpackage: set FFLAGS to default value: -g -O2
+dpkg-buildpackage: set CXXFLAGS to default value: -g -O2
+dpkg-buildpackage: source package gasfinder
+dpkg-buildpackage: source version 0.1-1
+dpkg-buildpackage: source changed by Eduardo Otubo <eduardo.otubo@gmail.com>
+dpkg-buildpackage: host architecture i386
+ fakeroot debian/rules clean
+test -x debian/rules
+dh_testroot
+dh_clean 
+ dpkg-source -b gasfinder-0.1
+dpkg-source: info: using source format `1.0'
+dpkg-source: info: building gasfinder using existing gasfinder_0.1.orig.tar.gz
+dpkg-source: info: building gasfinder in gasfinder_0.1-1.diff.gz
+dpkg-source: warning: newly created empty file 'debian/docs' will not be represented in diff
+dpkg-source: info: building gasfinder in gasfinder_0.1-1.dsc
+ debian/rules build
+test -x debian/rules
+mkdir -p "."
+ fakeroot debian/rules binary
+test -x debian/rules
+dh_testroot
+dh_clean -k 
+dh_installdirs -A 
+mkdir -p "."
+dh_installdirs -pgasfinder 
+dh_installdocs -pgasfinder   
+dh_installexamples -pgasfinder 
+dh_installman -pgasfinder  
+dh_installinfo -pgasfinder  
+dh_installmenu -pgasfinder 
+dh_installcron -pgasfinder 
+dh_installinit -pgasfinder   
+Duplicate specification "O=s" for option "O"
+dh_installdebconf -pgasfinder 
+dh_installemacsen -pgasfinder   
+dh_installcatalogs -pgasfinder 
+dh_installpam -pgasfinder 
+dh_installlogrotate -pgasfinder 
+dh_installlogcheck -pgasfinder 
+dh_installchangelogs -pgasfinder   
+dh_installudev -pgasfinder 
+dh_lintian -pgasfinder 
+dh_install -pgasfinder  
+dh_link -pgasfinder  
+dh_installmime -pgasfinder 
+dh_strip -pgasfinder  
+dh_compress -pgasfinder  
+dh_fixperms -pgasfinder  
+dh_makeshlibs -pgasfinder  
+dh_installdeb -pgasfinder 
+dh_perl -pgasfinder 
+dh_shlibdeps -pgasfinder    
+dh_gencontrol -pgasfinder  
+dpkg-gencontrol: warning: unknown substitution variable ${shlibs:Depends}
+# symlink identical documentation to depending packages
+[ -n "$CDBS_NO_DOC_SYMLINKING" ] || \
+	[ -h debian/gasfinder/usr/share/doc ] || \
+	[ -h debian/gasfinder/usr/share/doc/gasfinder ] || \
+	[ ! -d debian/gasfinder/usr/share/doc ] || \
+	for dep in `perl -ne 'if (/^(Pre-)?Depends:/) {s/^\w+://; foreach (split /,/) { split; print($_[0], "\n"); } }' debian/gasfinder/DEBIAN/control`; do \
+	    if [ -d debian/$dep/usr/share/doc ]; then \
+                echo "Searching for duplicated docs in dependency $dep..."; \
+                rootdir=`pwd`; \
+                (cd debian/gasfinder/usr/share/doc/gasfinder; find -type f ! -name copyright | while read f; do \
+                    thisfile="$rootdir/debian/gasfinder/usr/share/doc/gasfinder/$f"; \
+                    depfile="$rootdir/debian/$dep/usr/share/doc/$dep/$f"; \
+                    if [ -f $depfile -o -L $depfile ] && zcmp $thisfile $depfile >/dev/null; then \
+                        echo "  symlinking $f in gasfinder to file in $dep"; \
+                        rm $thisfile; ln -s /usr/share/doc/$dep/$f $thisfile; \
+                    fi; \
+                done ); \
+            fi; \
+	done
+# symlink identical Gnome help files within packages
+if [ -z "$CDBS_NO_GNOME_HELP_SYMLINKING" ] && [ -d debian/gasfinder/usr/share/gnome/help ]; then \
+            cd debian/gasfinder && LC_ALL=C fdupes -r1nq usr/share/gnome/help | while read s; do \
+                set -- $(echo $s | tr ' ' '\n' | sort); \
+                f=$1; shift; \
+                for d; do \
+                    echo "symlinking duplicate Gnome help file $d to $f"; \
+                    rm $d; ln -s /$f $d; \
+                done; \
+            done; \
+	fi
+dh_link -p gasfinder
+dh_md5sums -pgasfinder 
+dh_builddeb -pgasfinder 
+dpkg-deb: building package `gasfinder' in `../gasfinder_0.1-1_i386.deb'.
+ dpkg-genchanges  >../gasfinder_0.1-1_i386.changes
+dpkg-genchanges: including full source code in upload
+dpkg-buildpackage: full upload (original source is included)
+Now running lintian...
+W: gasfinder source: dh-make-template-in-source debian/prerm.ex
+W: gasfinder source: dh-make-template-in-source debian/manpage.sgml.ex
+W: gasfinder source: dh-make-template-in-source debian/manpage.1.ex
+W: gasfinder source: dh-make-template-in-source debian/init.d.lsb.ex
+W: gasfinder source: dh-make-template-in-source debian/emacsen-remove.ex
+W: gasfinder source: dh-make-template-in-source debian/postrm.ex
+W: gasfinder source: dh-make-template-in-source debian/emacsen-install.ex
+W: gasfinder source: dh-make-template-in-source debian/watch.ex
+W: gasfinder source: dh-make-template-in-source debian/gasfinder.default.ex
+W: gasfinder source: dh-make-template-in-source debian/cron.d.ex
+W: gasfinder source: dh-make-template-in-source debian/emacsen-startup.ex
+W: gasfinder source: dh-make-template-in-source debian/preinst.ex
+W: gasfinder source: dh-make-template-in-source debian/postinst.ex
+W: gasfinder source: dh-make-template-in-source debian/menu.ex
+W: gasfinder source: dh-make-template-in-source debian/gasfinder.doc-base.EX
+W: gasfinder source: dh-make-template-in-source debian/manpage.xml.ex
+W: gasfinder source: dh-make-template-in-source debian/init.d.ex
+W: gasfinder source: missing-debian-source-format
+E: gasfinder source: invalid-standards-version 0.1
+W: gasfinder: new-package-should-close-itp-bug
+W: gasfinder: wrong-bug-number-in-closes l3:#nnnn
+E: gasfinder: helper-templates-in-copyright
+W: gasfinder: copyright-has-url-from-dh_make-boilerplate
+E: gasfinder: copyright-contains-dh_make-todo-boilerplate
+W: gasfinder: readme-debian-contains-debmake-template
+Finished running lintian.

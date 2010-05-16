@@ -1,0 +1,15 @@
+Source: gasfinder
+Section: misc
+Priority: extra
+Maintainer: Eduardo Otubo <eduardo.otubo@gmail.com>
+Build-Depends: cdbs, debhelper (>= 7), yql, python (>= 2.4), python-support
+Standards-Version: 0.1
+Homepage: https://code.google.com/p/gasfinder/ 
+
+Package: gasfinder
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Find lower cost gas stations near you
+ Python+YQL application for Android and Maemo that
+ uses your GPS position to find low cost gas 
+ stations near you.

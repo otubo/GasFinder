@@ -1,0 +1,5 @@
+gasfinder (0.1-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Eduardo Otubo <eduardo.otubo@gmail.com>  Sun, 16 May 2010 15:40:46 -0300
