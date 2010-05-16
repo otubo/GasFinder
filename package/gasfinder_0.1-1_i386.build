@@ -17,6 +17,12 @@ dpkg-source: info: using source format `1.0'
 dpkg-source: info: building gasfinder using existing gasfinder_0.1.orig.tar.gz
 dpkg-source: info: building gasfinder in gasfinder_0.1-1.diff.gz
 dpkg-source: warning: newly created empty file 'debian/docs' will not be represented in diff
+dpkg-source: warning: newly created empty file 'debian/.svn/text-base/docs.svn-base' will not be represented in diff
+dpkg-source: warning: the diff modifies the following upstream files: 
+ .svn/all-wcprops
+ .svn/entries
+ .svn/text-base/gasfinder.py.svn-base
+dpkg-source: info: use the '3.0 (quilt)' format to have separate and documented changes to upstream files, see dpkg-source(1)
 dpkg-source: info: building gasfinder in gasfinder_0.1-1.dsc
  debian/rules build
 test -x debian/rules
@@ -56,7 +62,6 @@ dh_installdeb -pgasfinder
 dh_perl -pgasfinder 
 dh_shlibdeps -pgasfinder    
 dh_gencontrol -pgasfinder  
-dpkg-gencontrol: warning: unknown substitution variable ${shlibs:Depends}
 # symlink identical documentation to depending packages
 [ -n "$CDBS_NO_DOC_SYMLINKING" ] || \
 	[ -h debian/gasfinder/usr/share/doc ] || \
@@ -95,6 +100,9 @@ dpkg-deb: building package `gasfinder' in `../gasfinder_0.1-1_i386.deb'.
 dpkg-genchanges: including full source code in upload
 dpkg-buildpackage: full upload (original source is included)
 Now running lintian...
+W: gasfinder source: diff-contains-svn-control-dir .svn
+W: gasfinder source: diff-contains-svn-control-dir debian/.svn
+W: gasfinder source: debhelper-but-no-misc-depends gasfinder
 W: gasfinder source: dh-make-template-in-source debian/prerm.ex
 W: gasfinder source: dh-make-template-in-source debian/manpage.sgml.ex
 W: gasfinder source: dh-make-template-in-source debian/manpage.1.ex
@@ -113,6 +121,7 @@ W: gasfinder source: dh-make-template-in-source debian/gasfinder.doc-base.EX
 W: gasfinder source: dh-make-template-in-source debian/manpage.xml.ex
 W: gasfinder source: dh-make-template-in-source debian/init.d.ex
 W: gasfinder source: missing-debian-source-format
+E: gasfinder source: missing-build-dependency python-support
 E: gasfinder source: invalid-standards-version 0.1
 W: gasfinder: new-package-should-close-itp-bug
 W: gasfinder: wrong-bug-number-in-closes l3:#nnnn

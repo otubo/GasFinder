@@ -15,17 +15,17 @@ Changes:
  .
    * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
 Checksums-Sha1: 
- 214e7a398c138db3a1f9787aa1e07e71f6ed70b1 790 gasfinder_0.1-1.dsc
+ fb1f9e6db8b812d166158bca6c2a64a69b792582 752 gasfinder_0.1-1.dsc
  c5ed65c83411aa901e212be4233704afa13367d7 1516 gasfinder_0.1.orig.tar.gz
- 14bf061a429ef4e52d797c29d2edbb65098d86be 12007 gasfinder_0.1-1.diff.gz
- a45ffc59ea8def8908e9257b20ad4f627a063caf 2220 gasfinder_0.1-1_i386.deb
+ b97a83db3bb82344ae2a7f82b19f5a20ebb169c1 25957 gasfinder_0.1-1.diff.gz
+ fac53e73ae936436d9d6fbafb30d2a9ce909601c 2282 gasfinder_0.1-1_i386.deb
 Checksums-Sha256: 
- c6a296623f05a61dc14241ed0eca3529720a648b475aa61bebc5ba5498c22a4c 790 gasfinder_0.1-1.dsc
+ 81e4e4efa16b84398f587666ac97ba5000437ff390cc4148800ef9df48a6b452 752 gasfinder_0.1-1.dsc
  7b0f4ac77800be701976a968ae91747ef4a49d8529b54ec85d21581ff01f8440 1516 gasfinder_0.1.orig.tar.gz
- d1d8c2634de9e15cd9004ecb1f90466c5734d2a2b96e467a9f721e15590feaa3 12007 gasfinder_0.1-1.diff.gz
- 63bd0f6b8c639bb465552dc1b5a4ae1601762339222c863ffd20b2bc6ea27520 2220 gasfinder_0.1-1_i386.deb
+ 1557b5be11facc35fa7ec367a17eb2018c0c5465e7155b3ba7f33903831700c8 25957 gasfinder_0.1-1.diff.gz
+ d03a283d550fa2b1301b53f01dced67a49b2d13304f73c6c21b80258e2227451 2282 gasfinder_0.1-1_i386.deb
 Files: 
- 5f2a9a6deb443490a640c21dfdcc3bed 790 misc extra gasfinder_0.1-1.dsc
+ 016cc09e3584adf939a4ceef7558a5ab 752 misc extra gasfinder_0.1-1.dsc
  40c357b6fbedaee58132e7aa38afb6a0 1516 misc extra gasfinder_0.1.orig.tar.gz
- 93f7f97380cfe9dc66e5c96cc680489f 12007 misc extra gasfinder_0.1-1.diff.gz
- 7a0f2989ef446eaa7d35fa48ef99ec76 2220 misc extra gasfinder_0.1-1_i386.deb
+ 2b799e5f9813445854de3f8778c5a02c 25957 misc extra gasfinder_0.1-1.diff.gz
+ 7398a1e1a7c1fc758b4ae6d31c612775 2282 misc extra gasfinder_0.1-1_i386.deb
