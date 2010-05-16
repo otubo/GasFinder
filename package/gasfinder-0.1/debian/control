@@ -8,7 +8,7 @@ Homepage: https://code.google.com/p/gasfinder/
 
 Package: gasfinder
 Architecture: any
-Depends: yql, python (>= 2.4), python-support, python-simplejson, python-hildon, python-location, python-httplib2
+Depends: yql, python (>= 2.4), python-support, python-hildon, python-location
 Description: Find lower cost gas stations near you
  Python+YQL application for Android and Maemo that
  uses your GPS position to find low cost gas 
