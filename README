@@ -1,0 +1,57 @@
+GasFinder - Find lower cost gas stations near you
+=================================================
+
+
+1. About:
+=========
+
+  GasFinder is a application designed for mobile 
+  devices systems, such as Maemo and Android. It 
+  uses the device's GPS to get your position to 
+  find some near gas stations for you the choose
+  the best one or the cheapest one. Unfortunately
+  GasFinder's database is just available for 
+  Brazil. You could map you country and help us
+  grow the project :-)
+
+
+2. Design:
+==========
+
+  2.1 Android:
+  ------------
+  
+  GasFinder for Android is a simple proof of 
+  concept using ASE, the (Android Scripting 
+  Environment). It is written in Python and uses
+  Python YQL library.
+  
+  2.2 Maemo:
+  ----------
+  
+  GasFinder for Maemo is written in Python, (GTK 
+  and Hildon bindings) and Python YQL library.
+
+
+3. How it works:
+================
+
+  3.1 Back-end:
+  -------------
+  
+  There's a data miner which grabs all the information
+  about gas station from ANP[1] website. It organizes 
+  into a XML file for the YQL query it and return
+  another XML to the front-end. This part of the 
+  project is Luciano Camilo's responsibility.
+  
+  3.2 Front-end:
+  --------------
+  
+  The front-end is responsible for gathering the GPS
+  position of the device and execute the query to get
+  a list of near gas stations. The rest is designing 
+  screens and packaging stuff :-)
+
+
+[1] - http://www.anp.gov.br/
