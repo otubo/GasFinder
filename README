@@ -8,7 +8,7 @@ GasFinder - Find lower cost gas stations near you
   GasFinder is a application designed for mobile 
   devices systems, such as Maemo and Android. It 
   uses the device's GPS to get your position to 
-  find some near gas stations for you the choose
+  find some near gas stations for you to choose
   the best one or the cheapest one. Unfortunately
   GasFinder's database is just available for 
   Brazil. You could map you country and help us
