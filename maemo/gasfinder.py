@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import yql
 import gtk
 import hildon
+
+import yql
 import time
-import location
 import gobject
+import location
 
 latlong = 0
 gas_station_list = []
@@ -106,9 +107,12 @@ control.connect("error-verbose", on_error, loop)
 device.connect("changed", on_changed, control)
 
 i=0
-URL = "USE 'http://www.meusgastos.com.br/odt/meuspostos.precos.coordenadas.xml' as meuspostos.precos.coordenadas; SELECT * FROM meuspostos.precos.coordenadas WHERE lat=%f and lon=%f and sort=1" % device.fix[4:6]
+QUERY = "USE 'http://www.meusgastos.com.br/odt/meuspostos.precos.coordenadas.xml'
+         as meuspostos.precos.coordenadas;
+         SELECT * FROM meuspostos.precos.coordenadas 
+         WHERE lat=%f and lon=%f and sort=1" % device.fix[4:6]
 y = yql.Public()
-full_result = y.execute(URL)
+full_result = y.execute(QUERY)
 for row in full_result['query']['results']['item']:
     name_and_price = "%s (R$%s)" % (row['nome'],row['gasolina'])
     gas_station_list.append(name_and_price)
