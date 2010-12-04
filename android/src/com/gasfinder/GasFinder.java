@@ -33,23 +33,31 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 	static final String LIST_TAB_TAG = "List";
 	static final String MAP_TAB_TAG = "Map";
 
-    TabHost tabHost;
+	TabHost tabHost;
 	ListView listView;
 	MapView mapView;
 	MapController mc;
 	private LocationManager lm;
 	private LocationListener locationListener;
-	
+
+	boolean gps_enabled = false;
+	boolean network_enabled = false;
+	Location loc = null;
+
 	GeoPoint p;
-	
+
 	private class MyLocationListener implements LocationListener {
 		public void onLocationChanged(Location loc) {
 			if (loc != null) {
+				if((int) (loc.getLatitude() * 1E6) == 0 || (int) (loc
+						.getLongitude() * 1E6) == 0){
+					return;
+				}
 				p = new GeoPoint((int) (loc.getLatitude() * 1E6), (int) (loc
 						.getLongitude() * 1E6));
 				mc.animateTo(p);
-			    mc.setZoom(17);
-			    setMapZoomPoint(p, 12);
+				mc.setZoom(17);
+				setMapZoomPoint(p, 12);
 			}
 		}
 
@@ -65,45 +73,72 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 			// TODO Auto-generated method stub
 		}
 	}
-	
-	class MapOverlay extends com.google.android.maps.Overlay
-    {
-        @Override
-        public boolean draw(Canvas canvas, MapView mapView, 
-        boolean shadow, long when) 
-        {
-            super.draw(canvas, mapView, shadow);                   
- 
-            //---translate the GeoPoint to screen pixels---
-            Point screenPts = new Point();
-            mapView.getProjection().toPixels(p, screenPts);
- 
-            //---add the marker---
-            Bitmap bmp = BitmapFactory.decodeResource(
-                getResources(), R.drawable.pushpin);            
-            canvas.drawBitmap(bmp, screenPts.x, screenPts.y-50, null);         
-            return true;
-        }
-    }
-	
+
+	class MapOverlay extends com.google.android.maps.Overlay {
+		@Override
+		public boolean draw(Canvas canvas, MapView mapView, boolean shadow,
+				long when) {
+			super.draw(canvas, mapView, shadow);
+
+			// ---translate the GeoPoint to screen pixels---
+			Point screenPts = new Point();
+			try {mapView.getProjection().toPixels(p, screenPts);
+			} catch (Exception ex){
+				return false;
+			}
+
+			// ---add the marker---
+			Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+					R.drawable.pushpin);
+			canvas.drawBitmap(bmp, screenPts.x, screenPts.y - 50, null);
+			return true;
+		}
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
-		//GPS information
-        //---use the LocationManager class to obtain GPS locations---
-        lm = (LocationManager) 
-            getSystemService(Context.LOCATION_SERVICE);    
-        
-        locationListener = new MyLocationListener();
-        
-        lm.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER, 
-            0, 
-            0, 
-            locationListener);
-        
+
+		// GPS information
+		// ---use the LocationManager class to obtain GPS locations---
+		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+		// exceptions will be thrown if provider is not permitted.
+		try {
+			gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		} catch (Exception ex) {
+		}
+		try {
+			network_enabled = lm
+					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+		} catch (Exception ex) {
+		}
+
+		// don't start listeners if no provider is enabled
+		if (!gps_enabled && !network_enabled)
+			return;
+
+		locationListener = new MyLocationListener();
+
+		if (gps_enabled) {
+			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 0, locationListener);
+			
+		}else if(network_enabled) {
+			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+			
+		}else{
+			loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			if(loc == null)
+				loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			
+			p = new GeoPoint((int) (loc.getLatitude() * 1E6), (int) (loc
+					.getLongitude() * 1E6));
+			mc.animateTo(p);
+			mc.setZoom(17);
+			setMapZoomPoint(p, 12);
+		}
+
 		tabHost = (TabHost) findViewById(android.R.id.tabhost);
 
 		// setup must be called if you are not inflating the tabhost from XML
@@ -116,15 +151,18 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 
 		// create some dummy coordinates to add to the list
 		List<GeoPoint> pointsList = new ArrayList<GeoPoint>();
-		pointsList.add(new GeoPoint((int)(37.441*1E6),(int)(-122.1419*1E6)));
-		listView.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, pointsList));
+		pointsList.add(new GeoPoint((int) (37.441 * 1E6),
+				(int) (-122.1419 * 1E6)));
+		listView.setAdapter(new ArrayAdapter(this,
+				android.R.layout.simple_list_item_1, pointsList));
 
 		// add an onclicklistener to see point on the map
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView parent, View view,
 					int position, long id) {
 
-				GeoPoint geoPoint = (GeoPoint) listView.getAdapter().getItem(position);
+				GeoPoint geoPoint = (GeoPoint) listView.getAdapter().getItem(
+						position);
 				if (geoPoint != null) {
 					// have map view moved to this point
 					setMapZoomPoint(geoPoint, 12);
@@ -133,18 +171,18 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 				}
 			}
 		});
-		
-	    // setup map view
+
+		// setup map view
 		mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		mc = mapView.getController();
-	    
-	    MapOverlay mapOverlay = new MapOverlay();
-        List<Overlay> listOfOverlays = mapView.getOverlays();
-        listOfOverlays.clear();
-        listOfOverlays.add(mapOverlay);
-        
-        mapView.invalidate();
+
+		MapOverlay mapOverlay = new MapOverlay();
+		List<Overlay> listOfOverlays = mapView.getOverlays();
+		listOfOverlays.clear();
+		listOfOverlays.add(mapOverlay);
+
+		mapView.invalidate();
 
 		// add views to tab host
 		tabHost.addTab(tabHost.newTabSpec(LIST_TAB_TAG).setIndicator("List")
