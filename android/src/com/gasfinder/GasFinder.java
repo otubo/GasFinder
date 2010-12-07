@@ -21,6 +21,10 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
+import android.location.GpsStatus.Listener;
+import android.location.GpsStatus;
+import android.app.ProgressDialog;
+import android.content.Intent;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -28,13 +32,13 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
-public class GasFinder extends MapActivity implements OnTabChangeListener {
+import com.gasfinder.Details;
 
-	static final String LIST_TAB_TAG = "List";
-	static final String MAP_TAB_TAG = "Map";
+public class GasFinder extends MapActivity implements OnTabChangeListener {
 
 	TabHost tabHost;
 	ListView listView;
+	ListView listView2;
 	MapView mapView;
 	MapController mc;
 	private LocationManager lm;
@@ -45,7 +49,9 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 	Location loc = null;
 
 	GeoPoint p;
-
+	
+	ProgressDialog dialog;
+	
 	private class MyLocationListener implements LocationListener {
 		public void onLocationChanged(Location loc) {
 			if (loc != null) {
@@ -74,6 +80,23 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 		}
 	}
 
+	private final Listener onGpsStatusChange = new GpsStatus.Listener() {
+		public void onGpsStatusChanged(int event) {
+			switch (event) {
+			case GpsStatus.GPS_EVENT_STARTED:
+				dialog.show(GasFinder.this, "", "Getting GPS Status", true);
+				break;
+			case GpsStatus.GPS_EVENT_FIRST_FIX:
+				if (dialog != null && dialog.isShowing())
+					dialog.dismiss();
+				break;
+			case GpsStatus.GPS_EVENT_STOPPED:
+				// Stopped...
+				break;
+			}
+		}
+	};
+	
 	class MapOverlay extends com.google.android.maps.Overlay {
 		@Override
 		public boolean draw(Canvas canvas, MapView mapView, boolean shadow,
@@ -103,6 +126,7 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 		// GPS information
 		// ---use the LocationManager class to obtain GPS locations---
 		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		lm.addGpsStatusListener(onGpsStatusChange);
 
 		// exceptions will be thrown if provider is not permitted.
 		try {
@@ -147,14 +171,11 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 
 		// setup list view
 		listView = (ListView) findViewById(R.id.list);
-		listView.setEmptyView((TextView) findViewById(R.id.empty));
 
 		// create some dummy coordinates to add to the list
 		List<GeoPoint> pointsList = new ArrayList<GeoPoint>();
-		pointsList.add(new GeoPoint((int) (37.441 * 1E6),
-				(int) (-122.1419 * 1E6)));
-		listView.setAdapter(new ArrayAdapter(this,
-				android.R.layout.simple_list_item_1, pointsList));
+		pointsList.add(new GeoPoint((int) (37.441 * 1E6), (int) (-122.1419 * 1E6)));
+		listView.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, pointsList));
 
 		// add an onclicklistener to see point on the map
 		listView.setOnItemClickListener(new OnItemClickListener() {
@@ -166,11 +187,25 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 				if (geoPoint != null) {
 					// have map view moved to this point
 					setMapZoomPoint(geoPoint, 12);
+					Intent myIntent = new Intent();
+					myIntent.setClass(getApplicationContext(), com.gasfinder.Details.class);
+					startActivity(myIntent);
 					// programmatically switch tabs to the map view
-					tabHost.setCurrentTab(1);
+//					tabHost.setCurrentTab(1);
 				}
 			}
 		});
+		
+		// setup second list view
+		listView2 = (ListView) findViewById(R.id.list2);
+//		listView2.setEmptyView((TextView) findViewById(R.id.text2));
+
+		// create some dummy coordinates to add to the list
+		List<String> strings = new ArrayList<String>();
+		strings.add("hello");
+		strings.add("hello");
+		strings.add("hello");
+		listView2.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, strings));
 
 		// setup map view
 		mapView = (MapView) findViewById(R.id.mapview);
@@ -185,21 +220,29 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 		mapView.invalidate();
 
 		// add views to tab host
-		tabHost.addTab(tabHost.newTabSpec(LIST_TAB_TAG).setIndicator("List")
+		tabHost.addTab(tabHost.newTabSpec("List 1").setIndicator("List")
 				.setContent(new TabContentFactory() {
 					public View createTabContent(String arg0) {
 						return listView;
 					}
 				}));
-		tabHost.addTab(tabHost.newTabSpec(MAP_TAB_TAG).setIndicator("Map")
+		tabHost.addTab(tabHost.newTabSpec("Map 1").setIndicator("Map")
 				.setContent(new TabContentFactory() {
 					public View createTabContent(String arg0) {
 						return mapView;
 					}
 				}));
+		tabHost.addTab(tabHost.newTabSpec("Second List 1").setIndicator("Second List")
+				.setContent(new TabContentFactory() {
+					public View createTabContent(String arg0) {
+						return listView2;
+					}
+				}));
+
 
 		// HACK to get the list view to show up first,
 		// otherwise the mapview would be bleeding through and visible
+		tabHost.setCurrentTab(2);
 		tabHost.setCurrentTab(1);
 		tabHost.setCurrentTab(0);
 	}
@@ -228,10 +271,12 @@ public class GasFinder extends MapActivity implements OnTabChangeListener {
 	 * Implement logic here when a tab is selected
 	 */
 	public void onTabChanged(String tabName) {
-		if (tabName.equals(MAP_TAB_TAG)) {
+		if (tabName.equals("Map 1")) {
 			// do something on the map
 
-		} else if (tabName.equals(LIST_TAB_TAG)) {
+		} else if (tabName.equals("List 1")) {
+			// do something on the list
+		} else if (tabName.equals("Second List 1")) {
 			// do something on the list
 		}
 	}
