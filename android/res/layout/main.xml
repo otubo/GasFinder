@@ -1,4 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+android:id="@+id/widget37"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+xmlns:android="http://schemas.android.com/apk/res/android">
+	<RelativeLayout
+	android:id="@+id/widget36"
+	android:layout_width="fill_parent"
+	android:layout_height="48px"
+	android:layout_alignParentTop="true"
+	android:layout_alignParentLeft="true">
+		<TextView
+		android:id="@+id/address"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		android:textSize="12sp"
+		android:layout_below="@+id/label"
+		android:layout_alignLeft="@+id/label"
+		android:tag="address"
+		android:paddingLeft="10sp">
+		</TextView>
+		<TextView
+		android:id="@+id/label"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		android:textSize="16sp"
+		android:textStyle="bold"
+		android:layout_alignParentTop="true"
+		android:layout_toRightOf="@+id/logo"
+		android:tag="label"
+		android:paddingLeft="10sp">
+		</TextView>
+		<ImageView
+		android:id="@+id/logo"
+		android:layout_width="48px"
+		android:layout_height="48px"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentLeft="true"
+		android:tag="icone">
+		</ImageView>
+	</RelativeLayout>
+</RelativeLayout>
+
+<!--
 <TabHost xmlns:android="http://schemas.android.com/apk/res/android" android:id="@android:id/tabhost" android:layout_width="fill_parent" android:layout_height="fill_parent">
     <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
         <TabWidget android:id="@android:id/tabs" android:layout_width="fill_parent" android:layout_height="wrap_content" />
@@ -13,3 +59,4 @@
         </FrameLayout>
     </LinearLayout>
 </TabHost>
+-->
