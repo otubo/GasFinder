@@ -1,7 +1,8 @@
 package com.gasfinder;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -18,7 +19,8 @@ import org.json.JSONObject;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
@@ -28,10 +30,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SimpleAdapter.ViewBinder;
 
 import com.google.android.maps.GeoPoint;
 
-public class GasFinder extends ListActivity {
+public class GasFinder extends ListActivity implements OnClickListener {
 
 	private LocationManager lm;
 	private LocationListener locationListener;
@@ -45,13 +54,13 @@ public class GasFinder extends ListActivity {
 
 	GeoPoint p;
 	ProgressDialog dialog = null;
-	
+
 	public List<Map<String, Object>> resourceNames = new ArrayList<Map<String, Object>>();
 	public Map<String, Object> data;
-	private RefreshHandler mRedrawHandler = new RefreshHandler();
-	
+
 	Message msg = new Message();
-  
+	ListView listview = null;
+
 	class RefreshHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -65,23 +74,36 @@ public class GasFinder extends ListActivity {
 	};
 
 	private void updateUI(List<Map<String, Object>> resourceNames) {
-		android.widget.SimpleAdapter notes = new android.widget.SimpleAdapter(this, resourceNames,
-				R.layout.row, new String[] { "line1", "line2", "img" },
-				new int[] { R.id.text1, R.id.text2, R.id.img });
+		android.widget.SimpleAdapter notes = new android.widget.SimpleAdapter(
+				this, resourceNames, R.layout.row, new String[] { "line1",
+						"line2", "image" }, new int[] { R.id.text1, R.id.text2,
+						R.id.img });
 
-		setListAdapter(notes);
+		notes.setViewBinder(new MyViewBinder());
+		listview.setAdapter(notes);
 	}
-	
-	public class GasStationList extends ListActivity{
+
+	public class MyViewBinder implements ViewBinder {
+
+		public boolean setViewValue(View view, Object data,
+				String textRepresentation) {
+			if ((view instanceof ImageView) & (data instanceof Bitmap)) {
+				ImageView iv = (ImageView) view;
+				Bitmap bm = (Bitmap) data;
+				iv.setImageBitmap(bm);
+				return true;
+			}
+			return false;
+		}
+	}
+
+	public class GasStationList extends ListActivity {
 		public void buildList(double latitude, double longitude) {
 			// setup http request
 			URL url = null;
 			URLConnection con = null;
-			BufferedReader buffer = null;
-			String inputLine;
 			String jsonTxt = null;
 			JSONObject json = null;
-			JSONObject json2 = null;
 			JSONArray postos = null;
 
 			try {
@@ -94,21 +116,13 @@ public class GasFinder extends ListActivity {
 			}
 
 			Log.i("GasFinder", "URL: " + url);
-			
+
 			try {
 				con = url.openConnection();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			// try {
-			// buffer = new BufferedReader(new InputStreamReader(con
-			// .getInputStream()));
-			// } catch (IOException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 
 			try {
 				jsonTxt = IOUtils.toString(con.getInputStream());
@@ -125,9 +139,9 @@ public class GasFinder extends ListActivity {
 				e.printStackTrace();
 			}
 
-			try {				
+			try {
 				postos = json.getJSONObject("data").getJSONArray("Postos");
-				
+
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -138,7 +152,9 @@ public class GasFinder extends ListActivity {
 				JSONObject posto = null;
 				try {
 					posto = postos.getJSONObject(i);
-					Log.i("GasFinder", posto.getString("nome") + posto.getString("endereco") + posto.getString("bandeira"));
+					Log.i("GasFinder", posto.getString("nome")
+							+ posto.getString("endereco")
+							+ posto.getString("bandeira"));
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -156,14 +172,35 @@ public class GasFinder extends ListActivity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//				try {
-//					data.put("img", posto.getString("bandeira"));
-//				} catch (JSONException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-				data.put("img", 17301655);
 
+				URL myFileUrl = null;
+				Bitmap bmImg = null;
+				try {
+					try {
+						myFileUrl = new URL(posto.getString("icone"));
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					HttpURLConnection conn = (HttpURLConnection) myFileUrl
+							.openConnection();
+					conn.setDoInput(true);
+					conn.connect();
+					InputStream is = conn.getInputStream();
+
+					bmImg = BitmapFactory.decodeStream(is);
+					// imView.setImageBitmap(bmImg);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				data.put("image", bmImg);
 				resourceNames.add(data);
 			}
 			updateUI(resourceNames);
@@ -181,8 +218,10 @@ public class GasFinder extends ListActivity {
 						.getLongitude() * 1E6));
 				latitude = loc.getLatitude();
 				longitude = loc.getLongitude();
-				Log.i("GasFinder", "onLocationChanged: " + latitude + longitude);
-				
+				Log
+						.i("GasFinder", "onLocationChanged: " + latitude
+								+ longitude);
+
 				if (once_control) {
 					GasStationList list = new GasStationList();
 					list.buildList(latitude, longitude);
@@ -208,7 +247,6 @@ public class GasFinder extends ListActivity {
 		public void onGpsStatusChanged(int event) {
 			switch (event) {
 			case GpsStatus.GPS_EVENT_STARTED:
-//				ProgressDialog.show(GasFinder.this, "", "Getting GPS Status", true);
 				Log.i("GasFinder", "GPS STARTED");
 				break;
 			case GpsStatus.GPS_EVENT_FIRST_FIX:
@@ -224,6 +262,7 @@ public class GasFinder extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		listview = (ListView) findViewById(android.R.id.list);
 
 		// GPS information
 		// ---use the LocationManager class to obtain GPS locations---
@@ -268,30 +307,39 @@ public class GasFinder extends ListActivity {
 		}
 
 		resourceNames.add(data);
-		
-		android.widget.SimpleAdapter notes = new android.widget.SimpleAdapter(this, resourceNames,
-				R.layout.row, new String[] { "line1", "line2", "img" },
-				new int[] { R.id.text1, R.id.text2, R.id.img });
 
-		setListAdapter(notes);
-		
-		// // add an onclicklistener to see point on the map
-		// listView.setOnItemClickListener(new OnItemClickListener() {
-		// public void onItemClick(AdapterView parent, View view,
-		// int position, long id) {
-		//
-		// GeoPoint geoPoint = (GeoPoint) listView.getAdapter().getItem(
-		// position);
-		// if (geoPoint != null) {
-		// // have map view moved to this point
-		// Intent myIntent = new Intent();
-		// myIntent.setClass(getApplicationContext(),
-		// com.gasfinder.Details.class);
-		// startActivity(myIntent);
-		// // programmatically switch tabs to the map view
-		// // tabHost.setCurrentTab(1);
-		// }
-		// }
-		// });
+		android.widget.SimpleAdapter notes = new android.widget.SimpleAdapter(
+				this, resourceNames, R.layout.row, new String[] { "line1",
+						"line2", "img" }, new int[] { R.id.text1, R.id.text2,
+						R.id.img });
+
+		listview.setAdapter(notes);
+
+		// add an onclicklistener to see point on the map
+		listview.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView parent, View view,
+					int position, long id) {
+				Log.i("GasFinder", " " + position + " " + id);
+				// ProgressDialog.show(GasFinder.this, "", "Getting GPS Status",
+				// true);
+
+				// GeoPoint geoPoint = (GeoPoint) listView.getAdapter().getItem(
+				// position);
+				// if (geoPoint != null) {
+				// // have map view moved to this point
+				// Intent myIntent = new Intent();
+				// myIntent.setClass(getApplicationContext(),
+				// com.gasfinder.Details.class);
+				// startActivity(myIntent);
+				// // programmatically switch tabs to the map view
+				// // tabHost.setCurrentTab(1);
+				// }
+			}
+		});
+	}
+
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+
 	}
 }
