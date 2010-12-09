@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.GpsStatus;
@@ -57,6 +58,7 @@ public class GasFinder extends ListActivity implements OnClickListener {
 
 	public List<Map<String, Object>> resourceNames = new ArrayList<Map<String, Object>>();
 	public Map<String, Object> data;
+	public String[] index = new String[50];
 
 	Message msg = new Message();
 	ListView listview = null;
@@ -202,6 +204,13 @@ public class GasFinder extends ListActivity implements OnClickListener {
 
 				data.put("image", bmImg);
 				resourceNames.add(data);
+				
+				try {
+					index[i] = posto.getString("posto");
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			updateUI(resourceNames);
 		}
@@ -319,21 +328,14 @@ public class GasFinder extends ListActivity implements OnClickListener {
 		listview.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView parent, View view,
 					int position, long id) {
-				Log.i("GasFinder", " " + position + " " + id);
-				// ProgressDialog.show(GasFinder.this, "", "Getting GPS Status",
-				// true);
 
-				// GeoPoint geoPoint = (GeoPoint) listView.getAdapter().getItem(
-				// position);
-				// if (geoPoint != null) {
-				// // have map view moved to this point
-				// Intent myIntent = new Intent();
-				// myIntent.setClass(getApplicationContext(),
-				// com.gasfinder.Details.class);
-				// startActivity(myIntent);
-				// // programmatically switch tabs to the map view
-				// // tabHost.setCurrentTab(1);
-				// }
+				Intent myIntent = new Intent();
+				Bundle stats = new Bundle();
+
+				stats.putString("postoid", index[position+1]);
+				myIntent.putExtras(stats);
+				myIntent.setClass(getApplicationContext(), com.gasfinder.Details.class);
+				startActivity(myIntent);
 			}
 		});
 	}
