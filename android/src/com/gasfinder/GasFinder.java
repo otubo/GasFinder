@@ -1,9 +1,7 @@
 package com.gasfinder;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -13,7 +11,6 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
@@ -101,7 +98,6 @@ public class GasFinder extends ListActivity implements OnClickListener {
 
 	public class GasStationList extends ListActivity {
 		public void buildList(double latitude, double longitude) {
-			// setup http request
 			URL url = null;
 			URLConnection con = null;
 			String jsonTxt = null;
@@ -112,83 +108,34 @@ public class GasFinder extends ListActivity implements OnClickListener {
 				url = new URL(
 						"http://developer.meuspostos.com.br/api/busca.json?lat="
 								+ latitude + "&lon=" + longitude);
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
-			Log.i("GasFinder", "URL: " + url);
+//				Log.i("GasFinder", "URL: " + url);
 
-			try {
 				con = url.openConnection();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			try {
 				jsonTxt = IOUtils.toString(con.getInputStream());
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-			try {
 				json = new JSONObject(jsonTxt);
-
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			try {
 				postos = json.getJSONObject("data").getJSONArray("Postos");
 
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e1) {
+				e1.printStackTrace();
 			}
 
 			for (int i = 0; i < postos.length(); i++) {
 				data = new HashMap<String, Object>();
 				JSONObject posto = null;
-				try {
-					posto = postos.getJSONObject(i);
-					Log.i("GasFinder", posto.getString("nome")
-							+ posto.getString("endereco")
-							+ posto.getString("bandeira"));
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				try {
-					data.put("line1", posto.getString("nome"));
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
-					data.put("line2", posto.getString("endereco"));
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
 				URL myFileUrl = null;
 				Bitmap bmImg = null;
 				try {
-					try {
-						myFileUrl = new URL(posto.getString("icone"));
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
+					posto = postos.getJSONObject(i);
+//					Log.i("GasFinder", posto.getString("nome")
+//							+ posto.getString("endereco")
+//							+ posto.getString("bandeira"));
+
+					data.put("line1", posto.getString("nome"));
+					data.put("line2", posto.getString("endereco"));
+
+					myFileUrl = new URL(posto.getString("icone"));
+
 					HttpURLConnection conn = (HttpURLConnection) myFileUrl
 							.openConnection();
 					conn.setDoInput(true);
@@ -196,19 +143,12 @@ public class GasFinder extends ListActivity implements OnClickListener {
 					InputStream is = conn.getInputStream();
 
 					bmImg = BitmapFactory.decodeStream(is);
-					// imView.setImageBitmap(bmImg);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 
-				data.put("image", bmImg);
-				resourceNames.add(data);
-				
-				try {
+					data.put("image", bmImg);
+					resourceNames.add(data);
+
 					index[i] = posto.getString("posto");
-				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
+				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -240,15 +180,12 @@ public class GasFinder extends ListActivity implements OnClickListener {
 		}
 
 		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
 		}
 
 		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
 		}
 
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub
 		}
 	}
 
@@ -311,6 +248,9 @@ public class GasFinder extends ListActivity implements OnClickListener {
 			p = new GeoPoint((int) (loc.getLatitude() * 1E6), (int) (loc
 					.getLongitude() * 1E6));
 
+			latitude = loc.getLatitude();
+			longitude = loc.getLongitude();
+
 			GasStationList list = new GasStationList();
 			list.buildList(loc.getLatitude(), loc.getLongitude());
 		}
@@ -332,16 +272,18 @@ public class GasFinder extends ListActivity implements OnClickListener {
 				Intent myIntent = new Intent();
 				Bundle stats = new Bundle();
 
-				stats.putString("postoid", index[position+1]);
+				Log.i("GasFinder", "LOCATION ------------ " + latitude 	+ longitude);
+				stats.putString("postoid", index[position - 1]);
+				stats.putDouble("eu_latitude", latitude);
+				stats.putDouble("eu_longitude", longitude);
 				myIntent.putExtras(stats);
-				myIntent.setClass(getApplicationContext(), com.gasfinder.Details.class);
+				myIntent.setClass(getApplicationContext(),
+						com.gasfinder.Details.class);
 				startActivity(myIntent);
 			}
 		});
 	}
 
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
-
 	}
 }
