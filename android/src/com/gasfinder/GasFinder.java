@@ -2,8 +2,6 @@ package com.gasfinder;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import 	java.nio.charset.Charset;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -27,21 +25,22 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.GpsStatus.Listener;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleAdapter.ViewBinder;
-import android.widget.SimpleAdapter;
 
 import com.google.android.maps.GeoPoint;
 
@@ -58,7 +57,6 @@ public class GasFinder extends ListActivity implements OnClickListener {
 	public boolean once_control = true;
 
 	GeoPoint p;
-	ProgressDialog dialog = null;
 
 	public List<Map<String, Object>> resourceNames = new ArrayList<Map<String, Object>>();
 	public Map<String, Object> data;
@@ -68,7 +66,7 @@ public class GasFinder extends ListActivity implements OnClickListener {
 	Message msg = new Message();
 	ListView listview = null;
 	GasStationList list = new GasStationList();
-	
+
 	final int DISTANCIA = 0;
 	final int PRECO_GASOLINA = 1;
 	final int PRECO_ALCOOL = 2;
@@ -89,11 +87,10 @@ public class GasFinder extends ListActivity implements OnClickListener {
 	};
 
 	private void updateUI(List<Map<String, Object>> resourceNames) {
-		 notes = new android.widget.SimpleAdapter(
-				this, resourceNames, R.layout.row, new String[] { "line1",
-						"line2", "image" }, new int[] { R.id.text1, R.id.text2,
-						R.id.img });
-		
+		notes = new android.widget.SimpleAdapter(this, resourceNames,
+				R.layout.row, new String[] { "line1", "line2", "image" },
+				new int[] { R.id.text1, R.id.text2, R.id.img });
+
 		notes.setViewBinder(new MyViewBinder());
 		listview.setAdapter(notes);
 	}
@@ -123,7 +120,8 @@ public class GasFinder extends ListActivity implements OnClickListener {
 			try {
 				url = new URL(
 						"http://developer.meuspostos.com.br/api/busca.json?lat="
-								+ latitude + "&lon=" + longitude + "&ordem=" + ordem);
+								+ latitude + "&lon=" + longitude + "&ordem="
+								+ ordem);
 
 				con = url.openConnection();
 				jsonTxt = IOUtils.toString(con.getInputStream(), "ISO-8859-1");
@@ -143,24 +141,29 @@ public class GasFinder extends ListActivity implements OnClickListener {
 				try {
 					posto = postos.getJSONObject(i);
 					data.put("line1", posto.getString("nome"));
-					
-					Log.i("GasFinder", "bandeira ---------------------- " + posto.getString("bandeira"));
-					
+
+					Log.i("GasFinder", "bandeira ---------------------- "
+							+ posto.getString("bandeira"));
+
 					switch (ordem) {
 					case DISTANCIA:
-						data.put("line2", posto.getString("distancia") + "m");			
+						data.put("line2", posto.getString("distancia") + "m");
 						break;
 					case PRECO_GASOLINA:
-						data.put("line2", "Preço da Gasolina R$" + posto.getString("gasolina"));
+						data.put("line2", "Preço da Gasolina R$"
+								+ posto.getString("gasolina"));
 						break;
 					case PRECO_ALCOOL:
-						data.put("line2", "Preço o Álcool R$" + posto.getString("alcool"));
+						data.put("line2", "Preço o Álcool R$"
+								+ posto.getString("alcool"));
 						break;
 					case PRECO_DIESEL:
-						data.put("line2", "Preço do Diesel R$" + posto.getString("diesel"));			
+						data.put("line2", "Preço do Diesel R$"
+								+ posto.getString("diesel"));
 						break;
 					case PRECO_GNV:
-						data.put("line2", "Preço do GNV R$" + posto.getString("gnv"));
+						data.put("line2", "Preço do GNV R$"
+								+ posto.getString("gnv"));
 						break;
 					case NOME_POSTO:
 						data.put("line2", posto.getString("bandeira"));
@@ -179,12 +182,13 @@ public class GasFinder extends ListActivity implements OnClickListener {
 
 					data.put("image", bmImg);
 					resourceNames.add(data);
-					
+
 					index[i] = posto.getString("posto");
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
+
 			updateUI(resourceNames);
 		}
 	}
@@ -258,6 +262,14 @@ public class GasFinder extends ListActivity implements OnClickListener {
 		} catch (Exception ex) {
 		}
 
+		resourceNames.add(data);
+		android.widget.SimpleAdapter notes = new android.widget.SimpleAdapter(
+				this, resourceNames, R.layout.row, new String[] { "line1",
+						"line2", "img" }, new int[] { R.id.text1, R.id.text2,
+						R.id.img });
+
+		listview.setAdapter(notes);
+		
 		// don't start listeners if no provider is enabled
 		if (!gps_enabled && !network_enabled)
 			return;
@@ -283,7 +295,7 @@ public class GasFinder extends ListActivity implements OnClickListener {
 			latitude = loc.getLatitude();
 			longitude = loc.getLongitude();
 
-			list.buildList(loc.getLatitude(), loc.getLongitude(),DISTANCIA);
+			list.buildList(loc.getLatitude(), loc.getLongitude(), DISTANCIA);
 		}
 
 		// add an onclicklistener to see point on the map
@@ -294,8 +306,9 @@ public class GasFinder extends ListActivity implements OnClickListener {
 				Intent myIntent = new Intent();
 				Bundle stats = new Bundle();
 
-				Log.i("GasFinder", "LOCATION ------------ " + latitude 	+ longitude);
-				stats.putString("postoid", index[position - 1]);
+				Log.i("GasFinder", "LOCATION ------------ " + latitude
+						+ longitude);
+				stats.putString("postoid", index[position]);
 				stats.putDouble("eu_latitude", latitude);
 				stats.putDouble("eu_longitude", longitude);
 				myIntent.putExtras(stats);
@@ -305,18 +318,19 @@ public class GasFinder extends ListActivity implements OnClickListener {
 			}
 		});
 	}
-	
+
 	private void CreateMenu(Menu menu) {
 		menu.setQwertyMode(true);
 		MenuItem mnu1 = menu.add(0, 0, 0, "Ordenar por \n distância (padrão)");
 		{
 			mnu1.setAlphabeticShortcut('l');
 			mnu1.setIcon(R.drawable.ic_menu_answer_call);
-			
+
 		}
 		MenuItem mnu2 = null;
 		try {
-			mnu2 = menu.add(0, 1, 1, new String("Ordenar por preço de gasolina".getBytes(),"UTF-8"));
+			mnu2 = menu.add(0, 1, 1, new String("Ordenar por preço de gasolina"
+					.getBytes(), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -334,7 +348,7 @@ public class GasFinder extends ListActivity implements OnClickListener {
 		{
 			mnu1.setAlphabeticShortcut('l');
 			mnu1.setIcon(R.drawable.ic_menu_answer_call);
-			
+
 		}
 		MenuItem mnu5 = menu.add(0, 4, 4, "Ordenar por preço do GNV");
 		{
@@ -352,7 +366,7 @@ public class GasFinder extends ListActivity implements OnClickListener {
 		switch (item.getItemId()) {
 		case 0:
 			listview.setAdapter(null);
-			list.buildList(latitude, longitude, DISTANCIA);			
+			list.buildList(latitude, longitude, DISTANCIA);
 			return true;
 		case 1:
 			listview.setAdapter(null);
@@ -364,7 +378,7 @@ public class GasFinder extends ListActivity implements OnClickListener {
 			return true;
 		case 3:
 			listview.setAdapter(null);
-			list.buildList(latitude, longitude, PRECO_DIESEL);			
+			list.buildList(latitude, longitude, PRECO_DIESEL);
 			return true;
 		case 4:
 			listview.setAdapter(null);
@@ -391,5 +405,17 @@ public class GasFinder extends ListActivity implements OnClickListener {
 	}
 
 	public void onClick(View v) {
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View view,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, view, menuInfo);
+		CreateMenu(menu);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		return MenuChoice(item);
 	}
 }
