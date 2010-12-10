@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,6 +28,12 @@ public class Details extends Activity {
 	double posto_longitude;
 	double eu_latitude;
 	double eu_longitude;
+	String telefone = null;
+	String endereco = null;
+	String gasolina = null;
+	String alcool = null;
+	String gnv = null;
+	String diesel = null;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -45,7 +52,7 @@ public class Details extends Activity {
 		
 		eu_latitude = myBundle.getDouble("eu_latitude");
 		eu_longitude = myBundle.getDouble("eu_longitude");
-		Log.i("DETAIL", "LOCATION ------------ " + eu_latitude 	+ eu_longitude);
+		telefone = myBundle.getString("telefone");
 
 		URL url = null;
 		URLConnection con = null;
@@ -80,6 +87,12 @@ public class Details extends Activity {
 			bmImg = BitmapFactory.decodeStream(is);
 			posto_latitude = posto.getDouble("latitude");
 			posto_longitude = posto.getDouble("longitude");
+			
+			endereco = posto.getString("endereco");
+			gasolina = posto.getString("gasolina");
+			alcool = posto.getString("alcool");
+			gnv = posto.getString("gnv");
+			diesel = posto.getString("diesel");
 			
 
 			ImageView ImageViewicone = (ImageView) findViewById(R.id.icone);
@@ -116,8 +129,12 @@ public class Details extends Activity {
 		menu.setQwertyMode(true);
 		MenuItem mnu1 = menu.add(0, 0, 0, "Ligar");
 		{
+			if(telefone == "n/d"){
+				mnu1.setEnabled(false);
+			} 
 			mnu1.setAlphabeticShortcut('l');
 			mnu1.setIcon(R.drawable.ic_menu_answer_call);
+			
 		}
 		MenuItem mnu2 = menu.add(0, 1, 1, "Ver no Mapa");
 		{
@@ -134,12 +151,7 @@ public class Details extends Activity {
 	private boolean MenuChoice(MenuItem item) {
 		switch (item.getItemId()) {
 		case 0:
-			Toast.makeText(this, "You clicked on Item 2", Toast.LENGTH_LONG)
-			.show();
-			Intent myIntent = new Intent();
-			Bundle stats = new Bundle();
-
-
+			startActivityForResult(new Intent(Intent.ACTION_CALL,Uri.parse("tel:" + telefone)), 1);
 			return true;
 		case 1:
 			Intent nextIntent = new Intent();
@@ -156,8 +168,11 @@ public class Details extends Activity {
 			startActivity(nextIntent);
 			return true;
 		case 2:
-			Toast.makeText(this, "You clicked on Item 3", Toast.LENGTH_LONG)
-					.show();
+			Intent i = new Intent(Intent.ACTION_SEND);
+			i.setType("text/plain");
+			i.putExtra(Intent.EXTRA_SUBJECT, "Combustível Barato!");
+			i.putExtra(Intent.EXTRA_TEXT, "Combustível barato na região do + " + endereco + ": Gasolina a R$" + gasolina + ", Álcool a R$" + alcool + ", Diesel a R$" + diesel + "e GNV a R$" + gnv + " #gasfinder");
+			startActivity(Intent.createChooser(i, "Compartilhe"));
 			return true;
 		}
 		return false;
