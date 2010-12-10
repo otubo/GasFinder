@@ -1,6 +1,7 @@
 package com.gasfinder;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import 	java.nio.charset.Charset;
 
 import java.net.HttpURLConnection;
@@ -125,7 +126,7 @@ public class GasFinder extends ListActivity implements OnClickListener {
 								+ latitude + "&lon=" + longitude + "&ordem=" + ordem);
 
 				con = url.openConnection();
-				jsonTxt = IOUtils.toString(con.getInputStream());
+				jsonTxt = IOUtils.toString(con.getInputStream(), "ISO-8859-1");
 				json = new JSONObject(jsonTxt);
 				postos = json.getJSONObject("data").getJSONArray("Postos");
 
@@ -142,6 +143,8 @@ public class GasFinder extends ListActivity implements OnClickListener {
 				try {
 					posto = postos.getJSONObject(i);
 					data.put("line1", posto.getString("nome"));
+					
+					Log.i("GasFinder", "bandeira ---------------------- " + posto.getString("bandeira"));
 					
 					switch (ordem) {
 					case DISTANCIA:
@@ -311,7 +314,13 @@ public class GasFinder extends ListActivity implements OnClickListener {
 			mnu1.setIcon(R.drawable.ic_menu_answer_call);
 			
 		}
-		MenuItem mnu2 = menu.add(0, 1, 1, "Ordenar por preço de gasolina");
+		MenuItem mnu2 = null;
+		try {
+			mnu2 = menu.add(0, 1, 1, new String("Ordenar por preço de gasolina".getBytes(),"UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		{
 			mnu2.setAlphabeticShortcut('b');
 			mnu2.setIcon(R.drawable.ic_menu_mapmode);

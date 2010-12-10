@@ -20,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Details extends Activity {
 	
@@ -66,9 +65,7 @@ public class Details extends Activity {
 							+ postoid);
 			con = url.openConnection();
 			jsonTxt = IOUtils.toString(con.getInputStream());
-			
-//			jsonTxt = "{ \"data\" : { \"Posto\" : [ { \"latitude\": -9.96939, \"longitude\":-67.821499, \"posto\":4, \"nome\": \"ALDEMIR SOUZA ROCHA - ME.\", \"telefone\": \"N/D\", \"endereco\": \"AVENIDA CEARÁ, 2767 \", \"bairro\": \"ABRAHÃO ALAB\", \"dt_pesquisa\":\"08/11/2010\", \"bandeira\": \"EQUADOR\", \"icone\": \"http://meusgastos.com.br/img/null.png\", \"gasolina\":2.940, \"nota_gasolina\": 1, \"alcool\": 2.350, \"in_alcool\": 1, \"diesel\": 0.000, \"in_diesel\": 0, \"gnv\": 2.310, \"in_gnv\": 1, \"qt_nota1\": 0, \"qt_nota2\": 0, \"qt_nota3\": 0, \"qt_nota4\": 0, \"qt_nota5\": 0, \"comentarios\" : [ ] } ] }, \"status\" : \"200\", \"detail\" : \"OK\", \"resquest_uri\" : \"http://developer.meuspostos.com.br/api/posto.json?posto=4\", \"created_at\" : \"2010-12-09T01:41:33-02:00\", \"elapsed_time\" : \"109\" }";
-			
+						
 			json = new JSONObject(jsonTxt);
 			postos = json.getJSONObject("data").getJSONArray("Posto");
 			JSONObject posto = null;
