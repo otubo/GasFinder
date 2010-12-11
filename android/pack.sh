@@ -1,5 +1,6 @@
 #!/bin/bash
 
+ant clean &&
 ant release && 
 jarsigner -verbose -keystore gasfinder.keystore bin/GasFinder-unsigned.apk GasFinder && 
 rm bin/GasFinder.apk

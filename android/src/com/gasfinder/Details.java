@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Details extends Activity {
 	
@@ -36,6 +37,7 @@ public class Details extends Activity {
 	String alcool = null;
 	String gnv = null;
 	String diesel = null;
+	String bandeira = null;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,6 +57,7 @@ public class Details extends Activity {
 		eu_latitude = myBundle.getDouble("eu_latitude");
 		eu_longitude = myBundle.getDouble("eu_longitude");
 		telefone = myBundle.getString("telefone");
+		bandeira = myBundle.getString("bandeira");
 
 		URL url = null;
 		URLConnection con = null;
@@ -108,17 +111,44 @@ public class Details extends Activity {
 			ImageView iconegnv = (ImageView) findViewById(R.id.iconegnv);
 			
 			iconegasolina.setImageDrawable(getResources().getDrawable(R.drawable.iconegasolina));
+			iconegasolina.setPadding(6, 6, 6, 6);
+			
 			iconealcool.setImageDrawable(getResources().getDrawable(R.drawable.iconealcool));
+			iconealcool.setPadding(6, 6, 6, 6);
+			
 			iconediesel.setImageDrawable(getResources().getDrawable(R.drawable.iconediesel));
+			iconediesel.setPadding(6, 6, 6, 6);
+			
 			iconegnv.setImageDrawable(getResources().getDrawable(R.drawable.iconegnv));
+			iconegnv.setPadding(6, 6, 6, 6);
 			
 			ImageViewicone.setImageBitmap(bmImg);
+			ImageViewicone.setPadding(6, 6, 6, 6);
+			
+			
 			textViewname.setText(posto.getString("nome"));
+			textViewname.setTextSize(15);
+			textViewname.setPadding(6, 6, 6, 3);
+			
 			textViewaddr.setText(posto.getString("endereco"));
-			textViewgas.setText(posto.getString("gasolina"));
-			textViewalcohol.setText(posto.getString("alcool"));
-			textViewGNV.setText(posto.getString("gnv"));
-			textViewdiesel.setText(posto.getString("diesel"));
+			textViewaddr.setTextSize(13);
+			textViewaddr.setPadding(6, 0, 6, 6);
+			
+			textViewgas.setText("R$ " + posto.getString("gasolina"));
+			textViewgas.setTextSize(21);
+			textViewgas.setPadding(6, 6, 6, 6);
+			
+			textViewalcohol.setText("R$ " + posto.getString("alcool"));
+			textViewalcohol.setTextSize(21);
+			textViewalcohol.setPadding(6, 6, 6, 6);
+			
+			textViewGNV.setText("R$ " + posto.getString("gnv"));
+			textViewGNV.setTextSize(21);
+			textViewGNV.setPadding(6, 6, 6, 6);
+			
+			textViewdiesel.setText("R$ " + posto.getString("diesel"));
+			textViewdiesel.setTextSize(21);
+			textViewdiesel.setPadding(6, 6, 6, 6);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -129,9 +159,6 @@ public class Details extends Activity {
 		menu.setQwertyMode(true);
 		MenuItem mnu1 = menu.add(0, 0, 0, "Ligar");
 		{
-			if(telefone == "n/d"){
-				mnu1.setEnabled(false);
-			} 
 			mnu1.setAlphabeticShortcut('l');
 			mnu1.setIcon(R.drawable.ic_menu_answer_call);
 			
@@ -151,7 +178,13 @@ public class Details extends Activity {
 	private boolean MenuChoice(MenuItem item) {
 		switch (item.getItemId()) {
 		case 0:
-			startActivityForResult(new Intent(Intent.ACTION_CALL,Uri.parse("tel:" + telefone)), 1);
+			Log.i("DETAIL", "TELEFONE ------------ " + telefone);
+			if (telefone != "n/d" && telefone != null) {
+				startActivityForResult(new Intent(Intent.ACTION_CALL, Uri
+						.parse("tel:" + telefone)), 1);
+			}else{
+		        Toast.makeText(this, "Telefone não disponível", Toast.LENGTH_LONG).show();
+			}
 			return true;
 		case 1:
 			Intent nextIntent = new Intent();
@@ -162,6 +195,7 @@ public class Details extends Activity {
 			
 			nextstats.putDouble("eu_latitude", eu_latitude);
 			nextstats.putDouble("eu_longitude", eu_longitude);
+			nextstats.putString("bandeira", bandeira);
 			
 			nextIntent.putExtras(nextstats);
 			nextIntent.setClass(getApplicationContext(), com.gasfinder.Map.class);

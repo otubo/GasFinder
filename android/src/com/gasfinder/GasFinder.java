@@ -1,7 +1,6 @@
 package com.gasfinder;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -15,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -39,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleAdapter.ViewBinder;
 
@@ -246,6 +245,8 @@ public class GasFinder extends ListActivity implements OnClickListener {
 		setContentView(R.layout.main);
 		listview = (ListView) findViewById(android.R.id.list);
 
+        Toast.makeText(this, "Carregando lista de postos", Toast.LENGTH_LONG).show();
+		
 		// GPS information
 		// ---use the LocationManager class to obtain GPS locations---
 		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -321,71 +322,66 @@ public class GasFinder extends ListActivity implements OnClickListener {
 
 	private void CreateMenu(Menu menu) {
 		menu.setQwertyMode(true);
-		MenuItem mnu1 = menu.add(0, 0, 0, "Ordenar por \n distância (padrão)");
+		MenuItem mnu1 = menu.add(0, 0, 0, "Mais perto");
 		{
+			mnu1.getSubMenu();
 			mnu1.setAlphabeticShortcut('l');
-			mnu1.setIcon(R.drawable.ic_menu_answer_call);
+//			mnu1.setIcon(R.drawable.ic_menu_answer_call);
 
 		}
-		MenuItem mnu2 = null;
-		try {
-			mnu2 = menu.add(0, 1, 1, new String("Ordenar por preço de gasolina"
-					.getBytes(), "UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		MenuItem mnu2 = menu.add(0, 1, 1, "Gasolina barata");;
 		{
 			mnu2.setAlphabeticShortcut('b');
-			mnu2.setIcon(R.drawable.ic_menu_mapmode);
+//			mnu2.setIcon(R.drawable.ic_menu_mapmode);
 		}
-		MenuItem mnu3 = menu.add(0, 2, 2, "Ordenar por preço de ácool");
+		MenuItem mnu3 = menu.add(0, 2, 2, "Álcool barato");
 		{
 			mnu3.setAlphabeticShortcut('c');
-			mnu3.setIcon(R.drawable.ic_menu_share);
+//			mnu3.setIcon(R.drawable.ic_menu_share);
 		}
-		MenuItem mnu4 = menu.add(0, 3, 3, "Ordenar por preço de diesel");
+		MenuItem mnu4 = menu.add(0, 3, 3, "Diesel barato");
 		{
 			mnu1.setAlphabeticShortcut('l');
-			mnu1.setIcon(R.drawable.ic_menu_answer_call);
+//			mnu1.setIcon(R.drawable.ic_menu_answer_call);
 
 		}
-		MenuItem mnu5 = menu.add(0, 4, 4, "Ordenar por preço do GNV");
+		MenuItem mnu5 = menu.add(0, 4, 4, "GNV barato");
 		{
 			mnu2.setAlphabeticShortcut('b');
-			mnu2.setIcon(R.drawable.ic_menu_mapmode);
+//			mnu2.setIcon(R.drawable.ic_menu_mapmode);
 		}
-		MenuItem mnu6 = menu.add(0, 5, 5, "Ordenar por nome do Posto");
+		MenuItem mnu6 = menu.add(0, 5, 5, "Nome do posto");
 		{
 			mnu3.setAlphabeticShortcut('c');
-			mnu3.setIcon(R.drawable.ic_menu_share);
+//			mnu3.setIcon(R.drawable.ic_menu_share);
 		}
 	}
 
 	private boolean MenuChoice(MenuItem item) {
+		Log.i("GasFinder", "opcao ---------------------- " + item.getItemId());
 		switch (item.getItemId()) {
 		case 0:
-			listview.setAdapter(null);
+            Toast.makeText(this, "Ordenando pela distância do posto", Toast.LENGTH_LONG).show();
 			list.buildList(latitude, longitude, DISTANCIA);
 			return true;
 		case 1:
-			listview.setAdapter(null);
+            Toast.makeText(this, "Ordenando pelo menor preço de gasolina", Toast.LENGTH_LONG).show();
 			list.buildList(latitude, longitude, PRECO_GASOLINA);
 			return true;
 		case 2:
-			listview.setAdapter(null);
+            Toast.makeText(this, "Ordenando pelo menor preço do álcool", Toast.LENGTH_LONG).show();
 			list.buildList(latitude, longitude, PRECO_ALCOOL);
 			return true;
 		case 3:
-			listview.setAdapter(null);
+            Toast.makeText(this, "Ordenando pelo menor preço do diesel", Toast.LENGTH_LONG).show();
 			list.buildList(latitude, longitude, PRECO_DIESEL);
 			return true;
 		case 4:
-			listview.setAdapter(null);
+            Toast.makeText(this, "Ordenando pelo menor preço de GNV", Toast.LENGTH_LONG).show();
 			list.buildList(latitude, longitude, PRECO_GNV);
 			return true;
 		case 5:
-			listview.setAdapter(null);
+            Toast.makeText(this, "Ordenando pelo nome do posto.", Toast.LENGTH_LONG).show();
 			list.buildList(latitude, longitude, NOME_POSTO);
 			return true;
 		}

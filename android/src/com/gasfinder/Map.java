@@ -1,5 +1,8 @@
 package com.gasfinder;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 import android.content.Intent;
@@ -33,6 +36,7 @@ public class Map extends MapActivity {
 	public LinearLayout linearLayout; 
 	MapController mc;
 	GeoPoint eu, posto;
+	public String bandeira = null;
 
 	class MapOverlay extends com.google.android.maps.Overlay {
 		@Override
@@ -49,22 +53,20 @@ public class Map extends MapActivity {
 			}
 
 			// ---add the marker---
-			Bitmap bmp_posto = BitmapFactory.decodeResource(getResources(),
-					R.drawable.iimm2blue);
+			Bitmap bmp_posto = BitmapFactory.decodeResource(getResources(),R.drawable.iimm2blue);
 			canvas.drawBitmap(bmp_posto, screen_posto.x, screen_posto.y - 50, null);
 			
-			// ---translate the GeoPoint to screen pixels---
-			Point screen_eu = new Point();
-			try {
-				mapView.getProjection().toPixels(eu, screen_eu);
-			} catch (Exception ex) {
-				return false;
-			}
-
-			// ---add the marker---
-			Bitmap bmp_eu = BitmapFactory.decodeResource(getResources(),
-					R.drawable.iimm2green);
-			canvas.drawBitmap(bmp_eu, screen_eu.x, screen_eu.y - 50, null);
+//			// ---translate the GeoPoint to screen pixels---
+//			Point screen_eu = new Point();
+//			try {
+//				mapView.getProjection().toPixels(eu, screen_eu);
+//			} catch (Exception ex) {
+//				return false;
+//			}
+//
+//			// ---add the marker---
+//			Bitmap bmp_eu = BitmapFactory.decodeResource(getResources(),R.drawable.iimm2blue);
+//			canvas.drawBitmap(bmp_eu, screen_eu.x, screen_eu.y - 50, null);
 			
 			return true;
 		}
@@ -80,11 +82,6 @@ public class Map extends MapActivity {
 
 		mapView.setBuiltInZoomControls(true);
 		mc = mapView.getController();
-
-		MapOverlay mapOverlay = new MapOverlay();
-		List<Overlay> listOfOverlays = mapView.getOverlays();
-		listOfOverlays.clear();
-		listOfOverlays.add(mapOverlay);
 		
 		Intent callerIntent;
 		callerIntent = getIntent();
@@ -95,12 +92,18 @@ public class Map extends MapActivity {
 		double posto_longitude = myBundle.getDouble("posto_longitude");
 		double eu_latitude = myBundle.getDouble("eu_latitude");
 		double eu_longitude = myBundle.getDouble("eu_longitude");
+		bandeira = myBundle.getString("bandeira");
+		
+		MapOverlay mapOverlay = new MapOverlay();
+		List<Overlay> listOfOverlays = mapView.getOverlays();
+		listOfOverlays.clear();
+		listOfOverlays.add(mapOverlay);
 
 		eu = new GeoPoint((int) (eu_latitude * 1E6), (int) (eu_longitude * 1E6));
 		posto = new GeoPoint((int) (posto_latitude * 1E6), (int) (posto_longitude * 1E6));
 		mc.animateTo(posto);
 		mc.setZoom(10);
-		setMapZoomPoint(posto, 10);
+		setMapZoomPoint(posto, 18);
 
 		mapView.invalidate();
 	}
