@@ -21,10 +21,11 @@ GasFinder - Find lower cost gas stations near you
   2.1 Android:
   ------------
   
-  GasFinder for Android is a simple proof of 
-  concept using ASE, the (Android Scripting 
-  Environment). It is written in Python and uses
-  Python YQL library.
+  On its version 1.0 [2], with a fully Java and 
+  Android SDK implementation. Supports Listing, 
+  ordering by price (gas, alcohol, gnv and diesel),
+  detailed view, call gas station, view on map and
+  share with social networks.
   
   2.2 Maemo:
   ----------
@@ -55,3 +56,4 @@ GasFinder - Find lower cost gas stations near you
 
 
 [1] - http://www.anp.gov.br/
+[2] - https://github.com/otubo/GasFinder/commit/7a15cf1e7eb2d8e82ebe58ab5d80885a24c21861
